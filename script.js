@@ -6,7 +6,7 @@ let ctx = canvas.getContext('2d');
 let image;
 let mouseDown = false;
 let factor;
-let imgData = ctx.getImageData(0, 0, 600, 400);
+let imgData;
 
 function start() {
   loadImg();
@@ -15,7 +15,7 @@ function start() {
   ctx.lineCap = 'round';
   canvas.addEventListener('mousedown', down);
   canvas.addEventListener('mouseup', toggleDraw);
-  canvas.addEventListener('mousemove', function(event) {
+  canvas.addEventListener('mousemove', function (event) {
     let mousePosition = getMousePosition(canvas, event);
     let positionX = mousePosition.x;
     let positionY = mousePosition.y;
@@ -27,10 +27,12 @@ function start() {
 
 function loadImg() {
   image = new Image();
-  image.src =
-    'https://www.wykop.pl/cdn/c3201142/comment_MzEwETvgHANGlzTFlFo9SA22cXLFiOAJ.jpg';
-  image.onload = function() {
+  image.src = './zdj.png';
+  image.onload = function () {
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    console.log(image);
+    // imgData = ctx.getImageData(0, 0, 600, 400);
   };
 }
 
@@ -60,15 +62,22 @@ function draw(canvas, positionX, positionY) {
 }
 
 function contrastImage() {
-  let contrast = 70;
-  let d = imgData.data;
-  contrast = contrast / 100 + 1;
-  let intercept = 128 * (1 - contrast);
-  for (let i = 0; i < d.length; i += 4) {
-    d[i] = d[i] * contrast + intercept;
-    d[i + 1] = d[i + 1] * contrast + intercept;
-    d[i + 2] = d[i + 2] * contrast + intercept;
+  let imgData = ctx.getImageData(0, 0, 600, 400);
+  contrast(imgData, 0.5);
+  ctx.putImageData(imgData, 0, 0);
+  //   console.log('dziala');
+}
+
+function contrast(imageData, contrast) {
+  // contrast input as percent; range [-1..1]
+  let data = imageData.data; // Note: original dataset modified directly!
+  contrast *= 255;
+  let factor = (contrast + 255) / (255.01 - contrast); //add .1 to avoid /0 error.
+
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = factor * (data[i] - 128) + 128;
+    data[i + 1] = factor * (data[i + 1] - 128) + 128;
+    data[i + 2] = factor * (data[i + 2] - 128) + 128;
   }
-  console.log('dziala');
-  return imgData;
+  return imageData; //optional (e.g. for filter function chaining)
 }
