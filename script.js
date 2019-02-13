@@ -1,3 +1,6 @@
+//trzeba odpalić "Http Server" z którego bedzie pobierany obraazek
+
+//zmienne
 document.addEventListener("DOMContentLoaded", start);
 let canvas = document.getElementById("editor");
 let contrastBtn = document.querySelector("#contrastBtn");
@@ -8,6 +11,7 @@ let mouseDown = false;
 let factor;
 let imageData;
 
+//event listenery
 function start() {
   loadImg();
   ctx.strokeStyle = "purple";
