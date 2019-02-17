@@ -1,0 +1,1 @@
+trzeba serwowaæ zdjêcie do canvasa z nodowego http servera
